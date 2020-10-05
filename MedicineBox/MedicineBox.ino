@@ -1,4 +1,9 @@
-#include <Servo.h>
+#include <SPI.h>
+#include <TMRpcm.h> // The library to play the audio files
+TMRpcm Memoria;
+#include <SD.h> // SD library
+#define SD_ChipSelectPin 4 // Select the SS pin for the SD module
+#include <Servo.h> //Servo library
 #include "pitches.h"
 
 int melody[] = {
@@ -77,21 +82,37 @@ void setup() {
   myservo.attach(8);
   //initialize the pushbutton pin as an input:
   pinMode(buttonPin, INPUT);
+  // If the SS pin is in a LOW state it will send a Fail message:
+  if (!SD.begin(SD_ChipSelectPin)){
+    Serial.println("SD fail");
+    return;
+  }
+  Memoria.speakerPin = 9; // The pin where the speaker is located
 }
 
 void loop() {
   // read value from app somehow to know if medicine needs to be taken.
   if (played==0) {
+    Memoria.setVolume(5); // Set volume from 1 to 7
+    Memoria.quality(1); // Set to 0 or 1, 1 is better quality
+    Memoria.play("music.wav"; //Name of the audio file
+    delay(10000); //Delay, should be at least of the same length as the audio file
+
+
+
+
+
+    /*
     for (int thisNote = 0; melody[thisNote]!=-1; thisNote++) {
 
     int noteDuration = speed*noteDurations[thisNote];
     tone(3, melody[thisNote],noteDuration*.95);
-    Serial.println(melody[thisNote]);
     
     delay(noteDuration);
     
     noTone(3);
     }
+    */
     }
 
   
