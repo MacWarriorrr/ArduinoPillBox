@@ -7,20 +7,21 @@
 //Include ESP8266WiFi.h
 #include <ESP8266WiFi.h>
 
+// Objects for playing music
 SoftwareSerial mySoftwareSerial(10, 11); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 
+//Create firebase object
 FirebaseData firebaseData;
-Servo myservo; // servo object to control a servo
+
+// servo object to control a servo
+Servo myservo;
 
 int pos=90; // variable to store the servo position
 int rotate=10 //variable to store the servo rotation time
 
 const int buttonPin = 2; // the number of the pushbutton pin
 int buttonState = 0; //variable for reading the pushbutton status
-
-void begin(const String &host, const String &auth = "")
-String pushInt(const String &path, int value)
 
 void setup() {
   //Setup Firebase credential in setup:
@@ -60,7 +61,7 @@ void loop() {
   }
   // read value from app database to know if medicine needs to be taken and play music.
   if (med=1) {
-    myDFPlayer.play(1)
+    myDFPlayer.play(1);
   }
 
 
