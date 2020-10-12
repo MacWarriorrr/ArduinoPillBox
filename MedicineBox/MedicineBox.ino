@@ -1,4 +1,4 @@
-#include "Arduino.h"
+qe#include "Arduino.h"
 #include "SoftwareSerial.h"
 #include "DFRobotDFPlayerMini.h"
 #include <Servo.h> //Servo library
@@ -20,8 +20,11 @@ Servo myservo;
 int pos=90; // variable to store the servo position
 int rotate=10 //variable to store the servo rotation time
 
-const int buttonPin = 2; // the number of the pushbutton pin
+const int buttonPin = 0; // the number of the pushbutton pin
 int buttonState = 0; //variable for reading the pushbutton status
+
+const int calPin = 1; // the number of the recalibration click switch pin
+int calState = 0; //variable for reading the recalibration click switch status
 
 void setup() {
   //Setup Firebase credential in setup:
@@ -44,8 +47,9 @@ void setup() {
   // attaches the servo on pin 8 to the servo object
   myservo.attach(8);
   
-  //initialize the pushbutton pin as an input:
+  //initialize the pushbutton and calibration pin as an input:
   pinMode(buttonPin, INPUT);
+  pinMode(calPin, INPUT);
 
 }
 
@@ -76,7 +80,15 @@ void loop() {
     
   }
 
-
+  // Calibrate the system by rotating until the calibration click switch is pressed
+  cal = digitalRead(calPin);
+  if (/*systeem zegt dat ie moet kalibreren*/) {
+    while (cal == LOW) {
+      myservo.write(pos);         // tell servo to rotate at speed 'pos'
+      delay(5);                   // rotate for 5 ms and then read value again
+      cal = digitalRead(calPin);  
+    }
+  }
 
   delay(5);                //delay in between for stability
 }
