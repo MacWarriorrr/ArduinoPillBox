@@ -28,7 +28,7 @@ int calState = 0; //variable for reading the recalibration click switch status
 
 void setup() {
   //Setup Firebase credential in setup:
-  Firebase.begin("https://engineering-design-58c77.firebaseio.com/","");
+  Firebase.begin("https://engineering-design-58c77.firebaseio.com/","qazuoL8dbsUovsdDGaU4LTLNiuDwyvkDMq8972kb");
 
   //Setup of music:
   mySoftwareSerial.begin(9600);
