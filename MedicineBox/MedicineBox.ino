@@ -1,3 +1,4 @@
+
 #include "Arduino.h"
 #include "SoftwareSerial.h"
 #include "DFRobotDFPlayerMini.h"
@@ -18,13 +19,21 @@ FirebaseData firebaseData;
 Servo myservo;
 
 int pos=90; // variable to store the servo position
-int rotate=10 //variable to store the servo rotation time
+int rotate=10; //variable to store the servo rotation time
 
 const int buttonPin = 0; // the number of the pushbutton pin
 int buttonState = 0; //variable for reading the pushbutton status
 
 const int calPin = 1; // the number of the recalibration click switch pin
 int calState = 0; //variable for reading the recalibration click switch status
+
+// For amp meter
+const int sensorIn = A0;
+int mVperAmp = 185; 
+
+double Voltage = 0;
+double VRMS = 0;
+double AmpsRMS = 0;
 
 void setup() {
   //Setup Firebase credential in setup:
@@ -51,17 +60,17 @@ void setup() {
   pinMode(buttonPin, INPUT);
   pinMode(calPin, INPUT);
 
+  pinMode(A0, INPUT);
+
 }
 
 void loop() {
-  
+  int med;
   // Check value from database to see if medicine needs to be taken
-  if (Firebase.getInt(firebaseData, )){
-    if (firebaseData.dataType() == "int"){
-      med = firebase.intData();
+  if(Firebase.getInt(firebaseData, )){
+    if (firebaseData.dataType() == "int") {
+      med = firebaseData.intData();
     }
-  } else {
-    Serial.println(firebaseData.errorReason());
   }
   // read value from app database to know if medicine needs to be taken and play music.
   if (med=1) {
@@ -81,14 +90,47 @@ void loop() {
   }
 
   // Calibrate the system by rotating until the calibration click switch is pressed
-  cal = digitalRead(calPin);
-  if (/*systeem zegt dat ie moet kalibreren*/) {
-    while (cal == LOW) {
+  buttonState = digitalRead(calPin);
+  if (/*systeem zegt dat ie moet kalibreren, niet dit hier rechts*/buttonState == LOW) {
+    while (buttonState == LOW) {
       myservo.write(pos);         // tell servo to rotate at speed 'pos'
       delay(5);                   // rotate for 5 ms and then read value again
-      cal = digitalRead(calPin);  
+      buttonState = digitalRead(calPin);  
     }
   }
 
+  // AmpMeter below
+  Voltage = getVPP();
+  VRMS = (Voltage/2.0) * 0.707; //square root
+  AmpsRMS = (VRMS * 1000) / mVperAmp;
+  float Wattage = (220 * AmpsRMS)-18; // Observed 18-20 Watt when no load was connected, so substracting offset value to get real consumption.
+  
   delay(5);                //delay in between for stability
+}
+
+float getVVP(){
+  float result;
+
+  int readValue; // value read from the sensor
+  int maxValue = 0; 
+  int minValue = 1024;
+
+  uint32_t start_time = millis();
+
+  while((millis()-start_time) < 1000) { //sample for 1 sec
+    readValue = analogRead(sensorIn);
+    //see if we have a new maxValue
+    if (readValue > maxValue){
+      //record the maximum sensor value
+      maxValue = readValue;
+    }
+    if (readValue < minValue){
+      //record the maximum sensor value
+      minValue = readValue;
+    }
+  }
+  //subtract min from max
+  result = ((maxValue - minValue) * 5)/1024.0;
+
+  return result;
 }
