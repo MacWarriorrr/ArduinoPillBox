@@ -4,7 +4,7 @@
 #include "DFRobotDFPlayerMini.h"
 #include <Servo.h> //Servo library
 //Include Firebase ESP8266 library
-#include "FirebaseESP8266.h"
+#include <FirebaseESP8266.h>
 //Include ESP8266WiFi.h
 #include <ESP8266WiFi.h>
 
@@ -67,7 +67,7 @@ void setup() {
 void loop() {
   int med;
   // Check value from database to see if medicine needs to be taken
-  if(Firebase.getInt(firebaseData, )){
+  if (Firebase.getInt(firebaseData, )){
     if (firebaseData.dataType() == "int") {
       med = firebaseData.intData();
     }
@@ -98,9 +98,9 @@ void loop() {
       buttonState = digitalRead(calPin);  
     }
   }
-
+  
   // AmpMeter below
-  Voltage = getVPP();
+  Voltage = getVVP();
   VRMS = (Voltage/2.0) * 0.707; //square root
   AmpsRMS = (VRMS * 1000) / mVperAmp;
   float Wattage = (220 * AmpsRMS)-18; // Observed 18-20 Watt when no load was connected, so substracting offset value to get real consumption.
