@@ -4,16 +4,18 @@
 #include "DFRobotDFPlayerMini.h"
 #include <Servo.h> //Servo library
 //Include Firebase ESP8266 library
-#include <FirebaseESP8266.h>
+#include <FirebaseArduino.h>
 //Include ESP8266WiFi.h
 #include <ESP8266WiFi.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 
 // Objects for playing music
 SoftwareSerial mySoftwareSerial(10, 11); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 
 //Create firebase object
-FirebaseData firebaseData;
+
 
 // servo object to control a servo
 Servo myservo;
@@ -35,22 +37,37 @@ double Voltage = 0;
 double VRMS = 0;
 double AmpsRMS = 0;
 
+// Time server code 
+const char *ssid = "YOUR_SSID"; 
+const char *password = "YOUR_PASS"; 
+ 
+const unsigned long utcOffsetInSeconds = 3600; 
+ 
+char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}; 
+ 
+// Define NTP Client to get time 
+WiFiUDP ntpUDP; 
+NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds); 
+
+String path = "boxes/abc123/compartments";
+
 enum States { firebase_observe, refill, fetch};
 States currentState = firebase_observe;
 
 
 void setup() {
+  WiFi.begin(ssid, password);
 
-  if (currentState == firebase_observe) {
-    
-  } else if (currentState == refill) {
-    
-  } else if (currentState == fetch) {
-    
+  while ( WiFi.status() != WL_CONNECTED ) {
+    delay ( 500 );
+    Serial.print ( "." );
   }
+
+  timeClient.begin();
   
   //Setup Firebase credential in setup:
   Firebase.begin("https://engineering-design-58c77.firebaseio.com/","qazuoL8dbsUovsdDGaU4LTLNiuDwyvkDMq8972kb");
+  Firebase.stream(path);
 
   //Setup of music:
   mySoftwareSerial.begin(9600);
@@ -78,7 +95,9 @@ void setup() {
 }
 
 void loop() {
-
+  if (Firebase.available()){
+     FirebaseObject firebaseCompartments = Firebase.get();
+  }
   if (currentState == firebase_observe) {
     
   } else if (currentState == refill) {
