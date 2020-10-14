@@ -97,9 +97,31 @@ void setup() {
 void loop() {
   //update current date + time
   timeClient.update();
+  String formattedDate = timeClient.getFormattedDate();
+  int splitT = formattedDate.indexOf("T");
+  String dayStamp = formattedDate.substring(0, splitT);
+  String curDate = dayStamp + " " + timeClient.getHours() + ":" + timeClient.getMinutes();
+  curDate.replace('-','/');
   
   if (Firebase.available()){
-     FirebaseObject firebaseCompartments = Firebase.get(path); //if changes were made to the firebase, re-copy the firebase
+     compartments->clear();
+     JsonVariant compartmentsJSON = Firebase.get(path).getJsonVariant();
+     if (Firebase.success()) {
+      for( const auto& compartment : compartmentsJSON.as<JsonArray>() ) {
+
+        for( const auto& kv : compartment.as<JsonObject>() ) {
+          if (strcmp(kv.key, "id") == 0) {
+            // id and the key are the same
+            // id = kv.value.as<char>
+          } else if (strcmp(kv.key, "date") == 0) {
+            // date = kv.value.as<char>
+          } else if (strcmp(kv.key, "state") == 0) {
+            // state = kv.value.as<char*>
+          }
+        }
+      }
+     }
+
   }
   if (currentState == firebase_observe) {
     
