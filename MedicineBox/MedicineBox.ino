@@ -97,7 +97,7 @@ void setup() {
 
 void loop() {
   if (Firebase.available()){
-     FirebaseObject firebaseCompartments = Firebase.get();
+     FirebaseObject firebaseCompartments = Firebase.get(path);
   }
   if (currentState == firebase_observe) {
     
