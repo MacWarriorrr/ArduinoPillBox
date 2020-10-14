@@ -146,14 +146,6 @@ void loop() {
   Serial.print(", ");
   Serial.print(daysOfTheWeek[timeClient.getDay()]);
   */
-  int med;
-  // Check value from database to see if medicine needs to be taken
-  //if (Firebase.getInt(firebaseData, )){
-  //  if (firebaseData.dataType() == "int") {
-  //    med = firebaseData.intData();
-  //  }
-  //}
-  
   delay(5);                //delay in between for stability
 }
 
