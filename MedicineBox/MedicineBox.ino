@@ -40,6 +40,14 @@ States currentState = firebase_observe;
 
 
 void setup() {
+
+  if (currentState == firebase_observe) {
+    
+  } else if (currentState == refill) {
+    
+  } else if (currentState == fetch) {
+    
+  }
   
   //Setup Firebase credential in setup:
   Firebase.begin("https://engineering-design-58c77.firebaseio.com/","qazuoL8dbsUovsdDGaU4LTLNiuDwyvkDMq8972kb");
@@ -79,6 +87,18 @@ void loop() {
     
   }
   
+   */
+  Serial.println(timeClient.getFormattedDate());
+  Serial.println(timeClient.getFormattedTime());
+  Serial.println(timeClient.getSeconds());
+  Serial.print(":");
+  Serial.print(":");
+  Serial.print(timeClient.getHours());
+  Serial.print(timeClient.getMinutes());
+  Serial.print(", ");
+  Serial.print(daysOfTheWeek[timeClient.getDay()]);
+  /*
+  timeClient.update();
   int med;
   // Check value from database to see if medicine needs to be taken
   //if (Firebase.getInt(firebaseData, )){
