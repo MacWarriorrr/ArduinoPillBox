@@ -35,7 +35,20 @@ double Voltage = 0;
 double VRMS = 0;
 double AmpsRMS = 0;
 
+enum States { firebase_observe, refill, fetch};
+States currentState = firebase_observe;
+
+
 void setup() {
+
+  if (currentState == firebase_observe) {
+    
+  } else if (currentState == refill) {
+    
+  } else if (currentState == fetch) {
+    
+  }
+  
   //Setup Firebase credential in setup:
   Firebase.begin("https://engineering-design-58c77.firebaseio.com/","qazuoL8dbsUovsdDGaU4LTLNiuDwyvkDMq8972kb");
 
