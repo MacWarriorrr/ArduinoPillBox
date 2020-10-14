@@ -7,8 +7,6 @@
 #include <FirebaseESP8266.h>
 //Include ESP8266WiFi.h
 #include <ESP8266WiFi.h>
-#include <NTPClient.h>
-#include <WiFiUdp.h>
 
 // Objects for playing music
 SoftwareSerial mySoftwareSerial(10, 11); // RX, TX
@@ -37,31 +35,11 @@ double Voltage = 0;
 double VRMS = 0;
 double AmpsRMS = 0;
 
-// Time server code
-const char *ssid = "YOUR_SSID";
-const char *password = "YOUR_PASS";
-
-const unsigned long utcOffsetInSeconds = 3600;
-
-char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-
-// Define NTP Client to get time
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
-
 enum States { firebase_observe, refill, fetch};
 States currentState = firebase_observe;
 
 
 void setup() {
-
-  if (currentState == firebase_observe) {
-    
-  } else if (currentState == refill) {
-    
-  } else if (currentState == fetch) {
-    
-  }
   
   //Setup Firebase credential in setup:
   Firebase.begin("https://engineering-design-58c77.firebaseio.com/","qazuoL8dbsUovsdDGaU4LTLNiuDwyvkDMq8972kb");
@@ -89,36 +67,25 @@ void setup() {
 
   pinMode(A0, INPUT);
 
-  WiFi.begin(ssid, password);
-
-  while ( WiFi.status() != WL_CONNECTED ) {
-    delay ( 500 );
-    Serial.print ( "." );
-  }
-
-  timeClient.begin();
 }
 
 void loop() {
-  timeClient.update();
-  /*
-  Serial.print(daysOfTheWeek[timeClient.getDay()]);
-  Serial.print(", ");
-  Serial.print(timeClient.getHours());
-  Serial.print(":");
-  Serial.print(timeClient.getMinutes());
-  Serial.print(":");
-  Serial.println(timeClient.getSeconds());
-  Serial.println(timeClient.getFormattedTime());
-  Serial.println(timeClient.getFormattedDate());
-   */
+
+  if (currentState == firebase_observe) {
+    
+  } else if (currentState == refill) {
+    
+  } else if (currentState == fetch) {
+    
+  }
+  
   int med;
   // Check value from database to see if medicine needs to be taken
-  if (Firebase.getInt(firebaseData, )){
-    if (firebaseData.dataType() == "int") {
-      med = firebaseData.intData();
-    }
-  }
+  //if (Firebase.getInt(firebaseData, )){
+  //  if (firebaseData.dataType() == "int") {
+  //    med = firebaseData.intData();
+  //  }
+  //}
   // read value from app database to know if medicine needs to be taken and play music.
   if (med=1) {
     myDFPlayer.play(1);
@@ -181,3 +148,8 @@ float getVVP(){
 
   return result;
 }
+
+struct CompartmentHolder {
+  char *date;
+  char *state;
+};
