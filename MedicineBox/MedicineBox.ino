@@ -87,7 +87,7 @@ void loop() {
     
   }
   
-   */
+   /*
   Serial.println(timeClient.getFormattedDate());
   Serial.println(timeClient.getFormattedTime());
   Serial.println(timeClient.getSeconds());
@@ -97,7 +97,7 @@ void loop() {
   Serial.print(timeClient.getMinutes());
   Serial.print(", ");
   Serial.print(daysOfTheWeek[timeClient.getDay()]);
-  /*
+  */
   timeClient.update();
   int med;
   // Check value from database to see if medicine needs to be taken
