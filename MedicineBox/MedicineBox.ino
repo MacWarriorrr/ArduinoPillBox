@@ -54,6 +54,14 @@ String path = "boxes/abc123/compartments";
 enum States { firebase_observe, refill, fetch};
 States currentState = firebase_observe;
 
+class CompartmentHolder {
+  public:
+    char *id;
+    char *date;
+    char *state;
+};
+
+LinkedList<CompartmentHolder> *compartments = new LinkedList<CompartmentHolder>();
 
 void setup() {
   WiFi.begin(ssid, password);
@@ -97,10 +105,8 @@ void setup() {
 void loop() {
   //update current date + time
   timeClient.update();
-  String formattedDate = timeClient.getFormattedDate();
-  int splitT = formattedDate.indexOf("T");
-  String dayStamp = formattedDate.substring(0, splitT);
-  String curDate = dayStamp + " " + timeClient.getHours() + ":" + timeClient.getMinutes();
+  String dayStamp = timeClient.getFormattedTime();
+  String curDate = dayStamp; 
   curDate.replace('-','/');
   
   if (Firebase.available()){
@@ -206,9 +212,3 @@ float getVVP(){
 
   return result;
 }
-
-struct CompartmentHolder {
-  char *id;
-  char *date;
-  char *state;
-};
