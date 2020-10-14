@@ -14,9 +14,7 @@
 // Objects for playing music
 SoftwareSerial mySoftwareSerial(10, 11); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
-
-//Create firebase object
-
+int played = 0;
 
 // servo object to control a servo
 Servo myservo;
@@ -28,7 +26,6 @@ const int buttonPin = 0; // the number of the pushbutton pin
 int buttonState = 0; //variable for reading the pushbutton status
 
 const int calPin = 1; // the number of the recalibration click switch pin
-int calState = 0; //variable for reading the recalibration click switch status
 
 // For amp meter
 const int sensorIn = A0;
@@ -37,6 +34,8 @@ int mVperAmp = 185;
 double Voltage = 0;
 double VRMS = 0;
 double AmpsRMS = 0;
+
+const int wattLimit = 200;
 
 // Time server code 
 const char *ssid = "YOUR_SSID"; 
@@ -96,14 +95,43 @@ void setup() {
 }
 
 void loop() {
+  //update current date + time
+  timeClient.update();
+  
   if (Firebase.available()){
-     FirebaseObject firebaseCompartments = Firebase.get(path);
+     FirebaseObject firebaseCompartments = Firebase.get(path); //if changes were made to the firebase, re-copy the firebase
   }
   if (currentState == firebase_observe) {
     
   } else if (currentState == refill) {
     
   } else if (currentState == fetch) {
+    // read the state of the pushbutton value:
+    buttonState = digitalRead(buttonPin);
+    //Activate motor to go to specific compartment
+    myservo.write(pos);           // tell servo to go to rotate at speed written in variable 'pos'
+    delay(rotate);                // the servo will continue to rotate at this speed for 'rotate' seconds
+    if (played == 0){
+      // play music.
+      myDFPlayer.play(1);
+      played = 1;
+    }
+    if (buttonState == HIGH) {
+      myDFPlayer.stop();
+      played = 0;
+
+      // Calibrate the system by rotating until the calibration click switch is pressed
+      buttonState = digitalRead(calPin);
+      while (buttonState == LOW) {
+        myservo.write(pos);         // tell servo to rotate at speed 'pos'
+        delay(5);                   // rotate for 5 ms and then read value again
+        buttonState = digitalRead(calPin);
+        int wattage = getWatt();
+        if (wattage > wattLimit) {
+            break;
+        }
+      }
+    }
     
   }
   
@@ -118,7 +146,6 @@ void loop() {
   Serial.print(", ");
   Serial.print(daysOfTheWeek[timeClient.getDay()]);
   */
-  timeClient.update();
   int med;
   // Check value from database to see if medicine needs to be taken
   //if (Firebase.getInt(firebaseData, )){
@@ -126,40 +153,17 @@ void loop() {
   //    med = firebaseData.intData();
   //  }
   //}
-  // read value from app database to know if medicine needs to be taken and play music.
-  if (med=1) {
-    myDFPlayer.play(1);
-  }
-
-
-  // read the state of the pushbutton value:
-  buttonState = digitalRead(buttonPin);
-
-
-  //Activate motor when button is pressed and app gives a signal to
-  if (buttonState == HIGH and med == 1) {
-    myservo.write(pos);           // tell servo to go to rotate at speed written in variable 'pos'
-    delay(rotate);                // the servo will continue to rotate at this speed for 'rotate' seconds
-    
-  }
-
-  // Calibrate the system by rotating until the calibration click switch is pressed
-  buttonState = digitalRead(calPin);
-  if (/*systeem zegt dat ie moet kalibreren, niet dit hier rechts*/buttonState == LOW) {
-    while (buttonState == LOW) {
-      myservo.write(pos);         // tell servo to rotate at speed 'pos'
-      delay(5);                   // rotate for 5 ms and then read value again
-      buttonState = digitalRead(calPin);  
-    }
-  }
   
-  // AmpMeter below
+  delay(5);                //delay in between for stability
+}
+
+// AmpMeter below
+float getWatt (){
   Voltage = getVVP();
   VRMS = (Voltage/2.0) * 0.707; //square root
   AmpsRMS = (VRMS * 1000) / mVperAmp;
   float Wattage = (220 * AmpsRMS)-18; // Observed 18-20 Watt when no load was connected, so substracting offset value to get real consumption.
-  
-  delay(5);                //delay in between for stability
+  return Wattage;
 }
 
 float getVVP(){
