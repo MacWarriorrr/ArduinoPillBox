@@ -189,6 +189,7 @@ float getVVP(){
 }
 
 struct CompartmentHolder {
+  char *id;
   char *date;
   char *state;
 };
