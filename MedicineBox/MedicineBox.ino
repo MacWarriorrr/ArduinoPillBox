@@ -9,6 +9,7 @@
 #include <ESP8266WiFi.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
+#include <LinkedList.h>
 
 // Objects for playing music
 SoftwareSerial mySoftwareSerial(10, 11); // RX, TX
