@@ -7,6 +7,7 @@
 //Include ESP8266WiFi.h
 #include <ESP8266WiFi.h>
 #include <NTPClient.h>
+#include <time.h>
 #include <WiFiUdp.h>
 #include <LinkedList.h>
 
@@ -126,12 +127,12 @@ void setup() {
   pinMode(calPin, INPUT);
 
   pinMode(A0, INPUT);
-
 }
 
 void loop() {
   //update current date + time
   timeClient.update();
+  
   String dayStamp = timeClient.getFullFormattedTime();
   
   if (Firebase.available()){
