@@ -132,9 +132,7 @@ void setup() {
 void loop() {
   //update current date + time
   timeClient.update();
-  String dayStamp = timeClient.getFormattedTime();
-  String curDate = dayStamp; 
-  curDate.replace('-','/');
+  String dayStamp = timeClient.getFullFormattedTime();
   
   if (Firebase.available()){
      compartments->clear();
