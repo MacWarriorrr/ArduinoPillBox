@@ -36,8 +36,9 @@ int rotate=10; //variable to store the servo rotation time
 
 const int buttonPin = 0; // the number of the pushbutton pin
 int buttonState = 0; //variable for reading the pushbutton status
+int ledPin = D8;
 
-const int calPin = 1; // the number of the recalibration click switch pin
+const int calPin = D5; // the number of the recalibration click switch pin
 
 // For amp meter
 const int sensorIn = A0;
@@ -102,8 +103,9 @@ void setup() {
   //initialize the pushbutton and calibration pin as an input:
   pinMode(buttonPin, INPUT);
   pinMode(calPin, INPUT);
-
+  
   pinMode(A0, INPUT);
+  pinMode(D8, OUTPUT);
 }
 
 void loop() {
@@ -140,6 +142,7 @@ void loop() {
   } else if (currentState == fetch) {
     // read the state of the pushbutton value:
     buttonState = digitalRead(buttonPin);
+    digitalWrite(D8, HIGH);
     //Activate motor to go to specific compartment
     myservo.write(pos);           // tell servo to go to rotate at speed written in variable 'pos'
     delay(rotate);                // the servo will continue to rotate at this speed for 'rotate' seconds
@@ -166,18 +169,6 @@ void loop() {
     }
     
   }
-  
-   /*
-  Serial.println(timeClient.getFormattedDate());
-  Serial.println(timeClient.getFormattedTime());
-  Serial.println(timeClient.getSeconds());
-  Serial.print(":");
-  Serial.print(":");
-  Serial.print(timeClient.getHours());
-  Serial.print(timeClient.getMinutes());
-  Serial.print(", ");
-  Serial.print(daysOfTheWeek[timeClient.getDay()]);
-  */
   delay(5);                //delay in between for stability
 }
 
